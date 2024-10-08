@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: business_service
+jwt:
+  token:
+    secret: 8f821a74-aj74-4741-aa24-fd10o9b44705

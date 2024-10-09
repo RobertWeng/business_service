@@ -1,6 +1,17 @@
 spring:
   application:
-    name: business_service
+    name: business-service
 jwt:
   token:
     secret: 8f821a74-aj74-4741-aa24-fd10o9b44705
+server:
+  port: 8080
+eureka:
+  instance:
+    prefer-ip-address: true
+app:
+  eureka:
+    user-service:
+      url: http://user-service/v1
+    account-service:
+      url: http://account-service/v1

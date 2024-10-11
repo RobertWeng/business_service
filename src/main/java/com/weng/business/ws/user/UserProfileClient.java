@@ -1,41 +1,23 @@
 package com.weng.business.ws.user;
 
-import com.weng.business.config.WsConfig;
-import com.weng.business.ws.BaseServiceClient;
+import com.weng.business.config.WebClientConfig;
+import com.weng.business.ws.GenericServiceClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 @Component
-public class UserProfileClient implements BaseServiceClient {
-
-
+public class UserProfileClient {
     @Autowired
-    private WsConfig wsConfig;
-
+    private WebClientConfig webClientConfig;
     @Autowired
-    private WebClient.Builder webClientBuilder;
-
-    @Override
-    public WebClient.Builder getWebClientBuilder() {
-        return webClientBuilder;
-    }
-
-    @Override
-    public WebClient getWebClient(String baseUrl) {
-        return BaseServiceClient.super.getWebClient(baseUrl);
-    }
+    private GenericServiceClient serviceClient;
 
     public ResponseEntity<String> getProfile(String userId) {
-        WebClient webClient = getWebClient(wsConfig.getUserServiceBaseUrl());
-
-        ResponseEntity<String> responseEntity = webClient
-                .get()
-                .uri("/users/{userId}", userId)
-                .retrieve()
-                .toEntity(String.class)
-                .block(); // Use non-blocking if required
+        String baseUrl = webClientConfig.getUserServiceBaseUrl();
+        Mono<ResponseEntity<String>> mono = serviceClient.get(baseUrl, "/users/{userId}", String.class, userId);
+        ResponseEntity<String> responseEntity = mono.block();
         return responseEntity;
     }
 }

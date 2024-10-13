@@ -1,5 +1,6 @@
 package com.weng.business.controller;
 
+import com.weng.business.mapper.UserMapper;
 import com.weng.business.service.UserService;
 import com.weng.business.util.HashId;
 import com.weng.dto.user.request.UpdateUserReq;
@@ -22,16 +23,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Operation(summary = "Get Profile", description = "This API is used to retrieve user information")
     @GetMapping("")
     public Mono<ResponseEntity<UserRes>> getProfile(@PathVariable HashId userId) {
-        return userService.getProfile(userId.getValue());
+        return userService.getProfile(userId.getValue())
+                .map(userMapper::toUserRes);
     }
 
     @Operation(summary = "Update Profile", description = "This API is used to update user account")
     @PutMapping("")
     public Mono<ResponseEntity<UserRes>> updateProfile(@PathVariable HashId userId, @Valid @RequestBody UpdateUserReq req) {
-        return userService.updateProfile(userId.getValue(), req);
+        return userService.updateProfile(userId.getValue(), req)
+                .map(userMapper::toUserRes);
     }
 
     @Operation(summary = "Delete Profile", description = "This API is used to delete user account")

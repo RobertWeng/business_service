@@ -2,6 +2,7 @@ package com.weng.business.controller;
 
 import com.weng.business.mapper.FundAccountMapper;
 import com.weng.business.service.FundAccountService;
+import com.weng.business.util.HashId;
 import com.weng.dto.account.response.FundAccountRes;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,8 @@ public class AccountController {
 
     @Operation(summary = "Check Balance", description = "This API is used to retrieve user's fund account detail (Check Balance)")
     @GetMapping("")
-    public Mono<ResponseEntity<FundAccountRes>> checkBalance(@PathVariable Long userId) {
-        return fundAccountService.getBalance(userId)
+    public Mono<ResponseEntity<FundAccountRes>> checkBalance(@PathVariable HashId userId) {
+        return fundAccountService.getBalance(userId.getValue())
                 .map(fundAccountMapper::toFundAccountRes);
     }
 }

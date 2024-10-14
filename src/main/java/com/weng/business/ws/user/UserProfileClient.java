@@ -2,6 +2,7 @@ package com.weng.business.ws.user;
 
 import com.weng.business.config.WebClientConfig;
 import com.weng.business.ws.GenericServiceClient;
+import com.weng.business.ws.ParamsBuilder;
 import com.weng.dto.user.request.UpdateUserReq;
 import com.weng.dto.user.response.UserRes;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,9 @@ public class UserProfileClient {
     }
 
     public Mono<ResponseEntity<UserRes>> findByMobileNo(String mobileNo) {
-        Map<String, String> params = Map.of("mobileNo", mobileNo);
+        Map<String, String> params = new ParamsBuilder()
+                .addParam("mobileNo", mobileNo)
+                .build();
         return serviceClient.get(baseUrl, "/public/users", UserRes.class, params);
     }
 }

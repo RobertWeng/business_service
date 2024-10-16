@@ -32,7 +32,7 @@ public class WebClientConfig {
     // Log request details
     private ExchangeFilterFunction logRequest() {
         return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-            log.info("Request: {} {}", clientRequest.method(), clientRequest.url());
+            log.info("CLIENT-REQ: {} {}", clientRequest.method(), clientRequest.url());
             return Mono.just(clientRequest);
         });
     }
@@ -40,7 +40,7 @@ public class WebClientConfig {
     // Log response details
     private ExchangeFilterFunction logResponse() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
-            log.info("Response status: {}", clientResponse.statusCode());
+            log.info("CLIENT-RES: {}", clientResponse.statusCode());
             return Mono.just(clientResponse);
         });
     }

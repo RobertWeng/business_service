@@ -1,6 +1,8 @@
 package com.weng.business.converter;
 
 import com.weng.business.util.HashId;
+import com.weng.exception.Catch;
+import com.weng.exception.Error;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +15,6 @@ public class StringToHashIdConverter implements Converter<String, HashId> {
         if (decodedId != null) {
             return new HashId(decodedId);
         }
-        throw new IllegalArgumentException("Invalid HashId format");
+        throw Catch.invalidRequest(Error.Msg.INVALID_HASH_ID, source);
     }
 }

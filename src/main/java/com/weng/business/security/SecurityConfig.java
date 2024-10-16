@@ -28,15 +28,14 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF if you are using stateless JWT
                 .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers(
-//                                "/v1/public/**",
-//                                "/v1/test/**",
-//                                "/v3/api-docs/**",
-//                                "/swagger-ui/**",
-//                                "/swagger-ui.html")
-                                .anyRequest()
-                                .permitAll() // Allow access to public endpoints
-//                                .anyRequest().authenticated()  // Protect all other endpoints
+                        .requestMatchers(
+                                "/v1/public/**",
+                                "/v1/test/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html")
+                        .permitAll() // Allow access to public endpoints
+                        .anyRequest().authenticated()  // Protect all other endpoints
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // Disable session creation

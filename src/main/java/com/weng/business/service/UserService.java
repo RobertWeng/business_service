@@ -9,6 +9,7 @@ import com.weng.dto.user.request.LoginReq;
 import com.weng.dto.user.request.UpdateUserReq;
 import com.weng.dto.user.response.LoginRes;
 import com.weng.dto.user.response.UserRes;
+import com.weng.exception.Catch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,12 +42,13 @@ public class UserService {
                             .onErrorResume(accountError -> {
                                 // Step 3: If account creation fails, roll back the user creation
                                 return userProfileClient.deleteProfile(userId)
-                                        .then(Mono.error(new RuntimeException("Fund account creation failed. User rolled back.")));
+                                        .then(Mono.error(Catch.internalServerError("Fund account creation failed. User rolled back.")));
                             });
                 })
                 .onErrorResume(userError -> {
                     // If user creation fails, return the error
-                    return Mono.error(new RuntimeException("User registration failed: " + userError.getMessage()));
+                    log.error("User registration failed: {}", userError.getMessage());
+                    return Mono.error(Catch.internalServerError());
                 });
     }
 

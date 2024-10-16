@@ -1,8 +1,11 @@
 package com.weng.business.ws;
 
+import com.weng.business.service.JsonService;
+import com.weng.exception.Catch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,6 +19,9 @@ public class GenericServiceClient implements WebClientFactory {
 
     @Autowired
     private WebClient.Builder webClientBuilder;
+
+    @Autowired
+    private JsonService jsonService;
 
     @Override
     public WebClient.Builder createWebClientBuilder() {
@@ -46,11 +52,22 @@ public class GenericServiceClient implements WebClientFactory {
 
         return requestSpec
                 .retrieve()
-                .toEntity(responseType)
-                .onErrorResume(e -> {
-                    log.error("Error: {}", e.getMessage());
-                    return Mono.empty();  // TODO: Handle Error
-                });
+                .onStatus(HttpStatusCode::isError, clientResponse -> {
+                    // If the status is an error, map to a custom exception
+                    return clientResponse.bodyToMono(String.class)
+                            .flatMap(errorBody -> {
+                                // Map to a custom exception based on the error status and error body
+                                HttpStatusCode status = clientResponse.statusCode();
+                                try {
+                                    WsError wsError = jsonService.readValue(errorBody, WsError.class);
+                                    return Mono.error(new Catch(status.value(), wsError.code(), wsError.message()));
+                                } catch (Exception e) {
+                                    log.error("GenericServiceClient wsError: {}", e.getMessage());
+                                    return Mono.error(Catch.internalServerError());
+                                }
+                            });
+                })
+                .toEntity(responseType);
     }
 
     // Specific methods for each HTTP method (GET, POST, PUT, DELETE)
